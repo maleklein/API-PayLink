@@ -34,27 +34,26 @@ namespace PayLink.Controllers
             return Ok(payment);
         }
 
-        // POST: api/payments
-        [HttpPost] // POST: api/payments
+
+        // ✅ POST: api/payments
+        [HttpPost]
         public ActionResult<Payment> Create(PaymentDto dto)
         {
             try
             {
-                // Creamos el objeto Payment usando los datos del DTO
+                // Obtener la API Key del header
+                if (!Request.Headers.TryGetValue("X-API-KEY", out var apiKey))
+                    return Unauthorized("Falta el encabezado X-API-KEY.");
+
                 var payment = new Payment
                 {
                     TransactionId = dto.TransactionId,
                     FacturaId = dto.FacturaId,
-                    Monto = dto.Monto,
-                    Fecha = dto.Fecha,
-                    Estado = dto.Estado,
-                    BusinessId = dto.BusinessId 
+                    Monto = dto.Monto
                 };
 
-                // Llamamos al método que ya tenés en el servicio
-                var newPayment = _paymentService.Create(payment);
+                var newPayment = _paymentService.Create(payment, apiKey);
 
-                // Devolvemos el resultado como antes
                 return CreatedAtAction(nameof(GetById), new { id = newPayment.Id }, newPayment);
             }
             catch (Exception ex)
@@ -62,7 +61,6 @@ namespace PayLink.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
 
         // ✅ GET: api/payments/transaction/{transactionId}
         // Consulta el estado de un pago usando el ID de transacción (único por negocio)

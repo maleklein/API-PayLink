@@ -40,32 +40,31 @@ namespace PayLink.Services
         }
 
         // Crea un nuevo pago en la base de datos.
-        public Payment Create(Payment payment)
-        {
-            // Verifica que el negocio asociado exista.
-            var business = _context.Businesses.Find(payment.BusinessId);
-            if (business == null)
-                throw new Exception($"El negocio con ID {payment.BusinessId} no existe.");
 
-            // Valida el formato de los datos del pago.
+        // ✅ Crea un nuevo pago en la base de datos
+        public Payment Create(Payment payment, string apiKey)
+        {
+            // Validar que la API Key corresponda a un negocio válido
+            var business = _context.Businesses.FirstOrDefault(b => b.ApiKey == apiKey);
+            if (business == null)
+                throw new Exception("API Key inválida. Negocio no autorizado.");
+
+            // Validar datos del pago
             if (string.IsNullOrWhiteSpace(payment.FacturaId))
                 throw new Exception("El código de factura (FacturaId) es obligatorio.");
+
+            if (string.IsNullOrWhiteSpace(payment.TransactionId))
+                throw new Exception("El código de transacción (TransactionId) es obligatorio.");
 
             if (payment.Monto <= 0)
                 throw new Exception("El monto debe ser mayor que 0.");
 
-            if (payment.Fecha == default)
-                throw new Exception("La fecha del pago no es válida.");
+            // 3️⃣ Asignar datos automáticos
+            payment.Fecha = DateTime.Now;
+            payment.Estado = "Confirmado";
+            payment.BusinessId = business.Id;
 
-            var estadosValidos = new[] { "Aprobado", "Rechazado", "Pendiente" };
-                if (!estadosValidos.Contains(payment.Estado))
-                    throw new Exception("El estado del pago debe ser: Aprobado, Rechazado o Pendiente.");
-
-             // Generar un TransactionId único si no se envió
-            if (string.IsNullOrWhiteSpace(payment.TransactionId))
-                payment.TransactionId = Guid.NewGuid().ToString();
-         
-            _context.Payments.Add(payment); // Guarda el pago.
+            _context.Payments.Add(payment);
             _context.SaveChanges();
 
             return payment;

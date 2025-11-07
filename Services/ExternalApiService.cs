@@ -12,23 +12,22 @@ namespace PayLink.Services
         }
 
         // 🔹 Lógica para consultar la API de un negocio externo y traer una factura
-        public async Task<object?> GetInvoiceFromBusinessAsync(string apiUrl, string apiKey, int billId)
+        public async Task<object?> GetInvoiceFromBusinessAsync(string apiUrl, int billId)
         {
             try
             {
                 // Construye la URL completa, por ejemplo: https://negocio.com/api/bills/{billId}
                 var requestUrl = $"{apiUrl}/bills/{billId}";
 
-                // Limpia headers anteriores y agrega la API Key del negocio
+
                 _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("X-API-KEY", apiKey);
 
                 // Realiza la solicitud HTTP GET
                 var response = await _httpClient.GetAsync(requestUrl);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine($"❌ Error al consultar API externa: {response.StatusCode}");
+                    Console.WriteLine($"Error al consultar API externa: {response.StatusCode}");
                     return null;
                 }
 

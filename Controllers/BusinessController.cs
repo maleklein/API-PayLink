@@ -40,7 +40,6 @@ namespace PayLink.Controllers
                 Nombre = dto.Nombre,
                 Cuit = dto.Cuit,
                 ApiUrl = dto.ApiUrl,
-                ApiKey = dto.ApiKey
             };
 
             var newBusiness = _businessService.Create(business);
@@ -56,8 +55,7 @@ namespace PayLink.Controllers
             {
                 Nombre = dto.Nombre,
                 Cuit = dto.Cuit,
-                ApiUrl = dto.ApiUrl,
-                ApiKey = dto.ApiKey
+                ApiUrl = dto.ApiUrl
             };
 
             var updated = _businessService.Update(id, business);

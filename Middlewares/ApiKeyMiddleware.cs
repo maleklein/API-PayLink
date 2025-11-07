@@ -1,4 +1,5 @@
 using System.Net;
+using PayLink.Data;
 
 namespace PayLink.Middlewares
 {
@@ -12,18 +13,20 @@ namespace PayLink.Middlewares
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, IConfiguration config)
+        public async Task InvokeAsync(HttpContext context, PayLinkDbContext dbContext)
         {
-            var path = context.Request.Path.Value ?? "";
+            var path = context.Request.Path.Value?.ToLower() ?? "";
+            var method = context.Request.Method.ToUpper();
 
-            // Permitir Swagger sin autenticación
-            if (path.Contains("swagger") || path.Contains("index.html"))
+            // ✅ Permitir libre acceso a Swagger y al registro de negocios
+            if (path.Contains("swagger") || path.Contains("index.html") ||
+                (path.Contains("/api/business") && method == "POST"))
             {
                 await _next(context);
                 return;
             }
 
-            // Verificar si el header X-API-KEY está presente
+            // ✅ Verificar si el header X-API-KEY está presente
             if (!context.Request.Headers.TryGetValue(ApiKeyHeaderName, out var extractedApiKey))
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -31,17 +34,17 @@ namespace PayLink.Middlewares
                 return;
             }
 
-            // Obtener la clave válida desde configuración
-            var apiKey = config["ApiKey"];
+            // ✅ Buscar la ApiKey en la base de datos
+            var business = dbContext.Businesses.FirstOrDefault(b => b.ApiKey == extractedApiKey);
 
-            if (string.IsNullOrEmpty(apiKey) || !apiKey.Equals(extractedApiKey))
+            if (business == null)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                await context.Response.WriteAsync("API Key inválida.");
+                await context.Response.WriteAsync("API Key inválida o negocio no autorizado.");
                 return;
             }
 
-            // Si todo está bien, continúa
+            // ✅ Si todo está bien, continuar
             await _next(context);
         }
     }

@@ -6,7 +6,7 @@ namespace PayLink.Models
         public string Nombre { get; set; }      // Nombre del negocio (Ej: Tienda Luna)
         public string Cuit { get; set; }        // CUIT del negocio
         public string ApiUrl { get; set; }      // URL base de su API (para consultar facturas)
-        public string ApiKey { get; set; }      // Clave de autenticación del negocio
+        public string ApiKey { get; set; }      // Clave de autenticación generada para el negocio
 
         // Relación 1:N → un negocio puede tener muchos pagos
         public List<Payment> Payments { get; set; } = new List<Payment>();

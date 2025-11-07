@@ -24,6 +24,10 @@ namespace PayLink.Services
 
         public Business Create(Business business) // Crea un nuevo negocio.
         {
+            var apiKey = Guid.NewGuid().ToString("N").Substring(0, 20);
+            // "N" elimina los guiones — te queda algo tipo: 83f12a8d59a94a6e97a9
+            business.ApiKey = apiKey;
+            
             _context.Businesses.Add(business);
             _context.SaveChanges(); // Guarda los cambios en la base.
             return business;
@@ -38,7 +42,8 @@ namespace PayLink.Services
             existing.Nombre = updated.Nombre;
             existing.Cuit = updated.Cuit;
             existing.ApiUrl = updated.ApiUrl;
-            existing.ApiKey = updated.ApiKey;
+            // no actualizamos ApiKey xq esa se mantiene siempre
+
             _context.SaveChanges(); // Guarda los cambios.
 
             return existing; // Devuelve el negocio actualizado.

@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "ApiKeyScheme"
     });
 
-    // 🔑 Requerir la API Key en todas las operaciones
+    // 🔑 Mostrar el compo API Key en todas las operaciones desde el swagger
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {

@@ -28,10 +28,9 @@ namespace PayLink.Controllers
             // Llamamos al servicio que consulta la API externa del negocio
             var billData = await _externalApiService.GetInvoiceFromBusinessAsync(
                 business.ApiUrl,
-                business.ApiKey,
                 billId
             );
-
+    
             if (billData == null)
                 return StatusCode(502, "Error al consultar la API del negocio.");
 
