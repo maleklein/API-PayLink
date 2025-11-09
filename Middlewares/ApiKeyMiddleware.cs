@@ -18,7 +18,7 @@ namespace PayLink.Middlewares
             var path = context.Request.Path.Value?.ToLower() ?? "";
             var method = context.Request.Method.ToUpper();
 
-            // ✅ Permitir libre acceso a Swagger y al registro de negocios
+            // ✅ Permitir libre acceso a Swagger y al registro de negocios (POST de business)
             if (path.Contains("swagger") || path.Contains("index.html") ||
                 (path.Contains("/api/business") && method == "POST"))
             {
@@ -35,7 +35,9 @@ namespace PayLink.Middlewares
             }
 
             // ✅ Buscar la ApiKey en la base de datos
-            var business = dbContext.Businesses.FirstOrDefault(b => b.ApiKey == extractedApiKey);
+            var apiKeyString = extractedApiKey.ToString(); // Convierte el valor del header (StringValues) en un string simple, que EF Core sí puede comparar contra el campo ApiKey en la base.
+            var business = dbContext.Businesses.FirstOrDefault(b => b.ApiKey == apiKeyString); // Verifica si la API Key existe en la tabla Businesses.
+                                                                                               // Si no existe, corta la ejecución y devuelve 401 Unauthorized.
 
             if (business == null)
             {

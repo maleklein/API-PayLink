@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 namespace PayLink.Models
 {
     public class Payment
@@ -9,6 +10,8 @@ namespace PayLink.Models
         public DateTime Fecha { get; set; }          // Fecha y hora del pago
         public string Estado { get; set; }           // "Confirmado", "Pendiente", "Rechazado", etc.
         public int BusinessId { get; set; }          // Relación con el negocio
+
+        [JsonIgnore]
         public Business Business { get; set; }       // Propiedad de navegación
     }
 }

@@ -34,18 +34,26 @@ namespace PayLink.Controllers
         [HttpPost] // POST: api/business
         public ActionResult<Business> Create(BusinessCreateDto dto)
         {
-            // Mapeás manualmente el DTO a tu entidad Business
-            var business = new Business
+            try
             {
-                Nombre = dto.Nombre,
-                Cuit = dto.Cuit,
-                ApiUrl = dto.ApiUrl,
-            };
+                // Mapeás manualmente el DTO a tu entidad Business
+                var business = new Business
+                {
+                    Nombre = dto.Nombre,
+                    Cuit = dto.Cuit,
+                    ApiUrl = dto.ApiUrl,
+                };
 
-            var newBusiness = _businessService.Create(business);
+                var newBusiness = _businessService.Create(business);
 
-            // Devuelve 201 (Created) con la ubicación del nuevo recurso
-            return CreatedAtAction(nameof(GetById), new { id = newBusiness.Id }, newBusiness);
+                // Devuelve 201 (Created) con la ubicación del nuevo recurso
+                return CreatedAtAction(nameof(GetById), new { id = newBusiness.Id }, newBusiness);
+            }
+            catch (Exception ex)
+            {
+                // Si el servicio lanza un error (por ejemplo, CUIT duplicado), devolver 400
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")] // PUT: api/business/{id}
@@ -67,13 +75,22 @@ namespace PayLink.Controllers
         }
 
 
-        [HttpDelete("{id}")] // DELETE: api/business/{id}
+        [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var deleted = _businessService.Delete(id); // Elimina el negocio.
-            if (!deleted)
-                return NotFound(); // Si no existe, devuelve 404.
-            return NoContent(); // Si se elimina, devuelve 204.
+            try
+            {
+                var deleted = _businessService.Delete(id);
+                if (!deleted)
+                    return NotFound(); // 404 si no existe
+
+                return NoContent(); // 204 si se elimina correctamente
+            }
+            catch (Exception ex)
+            {
+                // ⚠ Si tiene pagos, devuelve 400 con el mensaje del servicio
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

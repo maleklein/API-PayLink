@@ -24,6 +24,10 @@ namespace PayLink.Services
 
         public Business Create(Business business) // Crea un nuevo negocio.
         {
+            var existing = _context.Businesses.FirstOrDefault(b => b.Cuit == business.Cuit);
+            if (existing != null)
+                throw new Exception($"Ya existe un negocio registrado con el CUIT {business.Cuit}.");
+        
             var apiKey = Guid.NewGuid().ToString("N").Substring(0, 20);
             // "N" elimina los guiones — te queda algo tipo: 83f12a8d59a94a6e97a9
             business.ApiKey = apiKey;
@@ -31,7 +35,7 @@ namespace PayLink.Services
             _context.Businesses.Add(business);
             _context.SaveChanges(); // Guarda los cambios en la base.
             return business;
-        }
+        }
 
         public Business? Update(int id, Business updated) // Actualiza un negocio.
         {
