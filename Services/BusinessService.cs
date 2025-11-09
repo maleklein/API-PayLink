@@ -56,11 +56,17 @@ namespace PayLink.Services
         public bool Delete(int id) // Elimina un negocio.
         {
             var business = _context.Businesses.Find(id); // Busca por ID.
-            if (business == null) return false; // Si no existe, devuelve false.
+            if (business == null)
+                return false; // Si no existe, devuelve false.
+
+            // 🔹 Verificar si tiene pagos asociados
+            bool tienePagos = _context.Payments.Any(p => p.BusinessId == id);
+            if (tienePagos)
+                throw new Exception("No se puede eliminar un negocio que tiene pagos registrados.");
 
             _context.Businesses.Remove(business); // Lo elimina.
             _context.SaveChanges(); // Guarda los cambios.
-            return true; // Confirma la eliminación.
+            return true; // Confirma la eliminación.
         }
     }
 }
