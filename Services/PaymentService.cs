@@ -34,18 +34,17 @@ namespace PayLink.Services
         // Devuelve todos los pagos asociados a una factura (FacturaId)
         public IEnumerable<Payment> GetByBillId(string billId)
         {
-            return _context.Payments
-                           .Where(p => p.FacturaId == billId)
-                           .ToList();
+            return _context.Payments.Where(p => p.FacturaId == billId).ToList();
         }
 
-        // Crea un nuevo pago en la base de datos.
-
-        // ✅ Crea un nuevo pago en la base de datos
+        // Crea un nuevo pago en la base de datos
         public Payment Create(Payment payment, string apiKey)
         {
             // Validar que la API Key corresponda a un negocio válido
-            var business = _context.Businesses.FirstOrDefault(b => b.ApiKey == apiKey);
+            var business = _context.Businesses.FirstOrDefault(b => b.ApiKey == apiKey); //Se obtiene el negocio 
+            // asociado a la API Key proporcionada para asignarle un business id. 
+            // Ya que cada negocio tiene su propia API Key y es su forma de iniciar sesion, 
+            // entonces con eso sabemos que negocio está haciendo el pago.
             if (business == null)
                 throw new Exception("API Key inválida. Negocio no autorizado.");
 
@@ -59,7 +58,7 @@ namespace PayLink.Services
             if (payment.Monto <= 0)
                 throw new Exception("El monto debe ser mayor que 0.");
 
-            // 3️⃣ Asignar datos automáticos
+            // Asignar datos automáticos
             payment.Fecha = DateTime.Now;
             payment.Estado = "Confirmado";
             payment.BusinessId = business.Id;

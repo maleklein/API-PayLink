@@ -16,7 +16,7 @@ namespace PayLink.Controllers
             _externalApiService = externalApiService;
         }
 
-        // ✅ GET: api/bills/{billId}?businessId=#
+        // GET: api/bills/{billId}?businessId=#
         // PayLink consulta la API del negocio para obtener los datos de esa factura
         [HttpGet("{billId}")]
         public async Task<ActionResult<object>> GetBillDetails(int billId, [FromQuery] int businessId)

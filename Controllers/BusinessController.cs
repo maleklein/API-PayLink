@@ -88,7 +88,7 @@ namespace PayLink.Controllers
             }
             catch (Exception ex)
             {
-                // ⚠ Si tiene pagos, devuelve 400 con el mensaje del servicio
+                // Si tiene pagos, devuelve 400 con el mensaje del servicio
                 return BadRequest(new { message = ex.Message });
             }
         }

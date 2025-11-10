@@ -35,7 +35,7 @@ namespace PayLink.Controllers
         }
 
 
-        // ✅ POST: api/payments
+        //  POST: api/payments
         [HttpPost]
         public ActionResult<Payment> Create(PaymentDto dto)
         {
@@ -43,7 +43,7 @@ namespace PayLink.Controllers
             {
                 // Obtener la API Key del header
                 if (!Request.Headers.TryGetValue("X-API-KEY", out var apiKey))
-                    return Unauthorized("Falta el encabezado X-API-KEY.");
+                    return Unauthorized("Falta el encabezado X-API-KEY."); //Hace esto para obtener la API Key del header
 
                 var payment = new Payment
                 {
@@ -52,7 +52,7 @@ namespace PayLink.Controllers
                     Monto = dto.Monto
                 };
 
-                var newPayment = _paymentService.Create(payment, apiKey);
+                var newPayment = _paymentService.Create(payment, apiKey); // Pasa la API Key al servicio
 
                 return CreatedAtAction(nameof(GetById), new { id = newPayment.Id }, newPayment);
             }
@@ -62,7 +62,7 @@ namespace PayLink.Controllers
             }
         }
 
-        // ✅ GET: api/payments/transaction/{transactionId}
+        //GET: api/payments/transaction/{transactionId}
         // Consulta el estado de un pago usando el ID de transacción (único por negocio)
         [HttpGet("transaction/{transactionId}")]
         public ActionResult<Payment> GetByTransactionId(string transactionId)
@@ -73,7 +73,7 @@ namespace PayLink.Controllers
             return Ok(payment);
         }
 
-        // ✅ GET: api/payments/bill/{billId}
+        // GET: api/payments/bill/{billId}
         // Devuelve todos los pagos asociados a una factura específica
         [HttpGet("bill/{billId}")]
         public ActionResult<IEnumerable<Payment>> GetByBillId(string billId)
